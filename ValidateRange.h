@@ -8,7 +8,7 @@ using namespace std;
 
 //kiem gia tri trong pham vi hop le
 template <typename T>
-T validateRange(T value, T minVal, T maxVal, const string& name = "Value") {
+inline T validateRange(T value, T minVal, T maxVal, const string& name = "Value"){
     if (value < minVal || value > maxVal) {
         ostringstream oss;
         oss << name << " = " << value

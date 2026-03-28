@@ -1,6 +1,25 @@
 #include "PrintMenu.h"
+#ifndef _WIN32
+    #include <signal.h>
+    #include <termios.h>
+    #include <unistd.h>
+#endif
 
+#ifndef _WIN32
+void handleSignal(int sig){
+    struct termios t;
+    tcgetattr(STDIN_FILENO, &t);
+    t.c_lflag |= (ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t);
+    exit(0);
+}
+#endif
 int main() {
+#ifndef _WIN32
+    signal(SIGINT, handleSignal);
+    signal(SIGTERM, handleSignal);
+    signal(SIGHUP, handleSignal);
+#endif
     try {
         clearScreen();
 
@@ -8,13 +27,13 @@ int main() {
 
         bool running = true;
 
+
         while (running) {
             clearScreen();
             printHeader();
             printMenu();
 
             char key = getChar();
-            cout << key << endl;
 
             if (key == '0') {
                 running = false;
@@ -27,7 +46,7 @@ int main() {
                 continue;
             }
 
-            int  choice = key - '0';
+            int  choice = (int)(key - '0');
             bool retry  = false;
 
             do {
@@ -61,3 +80,4 @@ int main() {
     }
     return 0;
 }
+

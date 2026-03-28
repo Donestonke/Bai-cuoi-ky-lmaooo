@@ -83,6 +83,9 @@ bool showSubMenu() {
         }
         if (c == 'm' || c == 'M') {
         return false; }
+
+
+        cout << "Chi duoc phep nhap [R] hoac [M]" << endl;
     }
 }
 

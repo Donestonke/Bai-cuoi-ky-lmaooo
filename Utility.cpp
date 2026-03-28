@@ -1,13 +1,8 @@
 #include "Utility.h"
 #include "GateException.h"
 #include <cstdlib>
-
-#ifdef _WIN32
-    #include <conio.h>
-#else
     #include <termios.h>
     #include <unistd.h>
-#endif
 
 void clearScreen() {
 
@@ -24,13 +19,33 @@ int readInt(const string& prompt) {
     return val;
 }
 
+#ifndef _WIN32
+static struct termios originalTermios;
+static bool termiosSaved = false;
+
+static void restoreTerminal(){
+    if(termiosSaved){
+        tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios);
+                termiosSaved = false;
+    }
+}
+#endif
+
 char getChar() {
 #ifdef _WIN32
     return (char)getch();
 #else
     struct termios oldt, newt;
     char c;
+
     tcgetattr(STDIN_FILENO, &oldt);
+
+    if(!termiosSaved){
+        originalTermios = oldt;
+        termiosSaved = true;
+        atexit(restoreTerminal);
+
+    }
     newt = oldt;
     newt.c_lflag &= ~(ICANON | ECHO);
 
